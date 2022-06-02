@@ -17,9 +17,6 @@ echo "${params.Deploy}"
     }
  }
 stage("Deployement"){
-when {
-    expression {params.Deploy == "true" && params.name =="master"}
-}
 steps{
 script{
 
