@@ -22,7 +22,7 @@ script{
 
 echo "Deployement Started"
 sh 'ssh root@172.31.12.227 /opt/tomcat/bin/shutdown.sh'
-sh 'scp -o StrictHostKeyChecking=no -r /var/lib/jenkins/workspace/declarative_pipeline/target/psdapp.war root@172.31.12.227:/opt/tomcat/webapps'
+sh 'scp -o StrictHostKeyChecking=no -r /var/lib/jenkins/workspace/CI/target/psdapp.war root@172.31.12.227:/opt/tomcat/webapps'
 sh 'ssh root@172.31.12.227 /opt/tomcat/bin/startup.sh' 
 echo "Deployement completed"
 
