@@ -1,0 +1,54 @@
+pipeline{
+agent any
+parameters {
+  string defaultValue: '', description: 'Please select the name', name: 'name', trim: true
+  string defaultValue: '', description: 'Please select the Choice ', name: 'Choice'
+  string defaultValue: '', description: 'Please select the deploy or not ', name: 'Deploy'
+}
+stages{
+stage("verification"){
+steps{
+script{
+echo "${params.name}"
+echo "${params.Choice}"
+echo "${params.Deploy}"
+
+       }
+    }
+ }
+stage("Deployement"){
+when {
+    expression {params.Deploy == "true" && params.name =="master"}
+}
+steps{
+script{
+
+echo "Deployement Started"
+sh 'ssh root@172.31.12.227 /opt/tomcat/bin/shutdown.sh'
+sh 'scp -o StrictHostKeyChecking=no -r /var/lib/jenkins/workspace/declarative_pipeline/target/psdapp.war root@172.31.12.227:/opt/tomcat/webapps'
+sh 'ssh root@172.31.12.227 /opt/tomcat/bin/startup.sh' 
+echo "Deployement completed"
+
+         }
+       }
+	   	 post{
+success{
+    mail to: 'naveentanish20@gmail.com',
+    subject: "Job '${JOB_NAME}' (${BUILD_NUMBER}) is success",
+    body: "Please go to ${BUILD_URL} and verify the build is success or not"
+    }
+failure{
+    mail to: 'naveentanish20@gmail.com',
+    subject: "Job '${JOB_NAME}' (${BUILD_NUMBER}) is failed",
+    body: "Please go to ${BUILD_URL} and verify the build"
+    }
+always{
+    mail to: 'naveentanish20@gmail.com',
+	subject: "Job '${JOB_NAME}' (${BUILD_NUMBER}) is always",
+	body: "Please go to ${BUILD_URL} and this is always"
+   }
+}
+     }
+   }
+ }
+

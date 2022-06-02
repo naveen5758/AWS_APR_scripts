@@ -1,0 +1,84 @@
+pipeline {
+agent any 
+parameters {
+  string defaultValue: 'master', description: 'Please select the name', name: 'name', trim: true
+  choice choices: ['master', 'Dev', 'Prod'], description: 'Please select the Choice ', name: 'Choice'
+  booleanParam description: 'Please select the deploy or not ', name: 'Deploy'
+}
+stages{
+stage("SCM or Cloning"){
+steps{
+script{
+
+echo "Cloning Started"
+git branch: '$name', credentialsId: 'Github_cred', url: 'https://github.com/naveen5758/sampletest.git'
+echo "$name"
+echo "cloning completed"
+         }
+       }
+     }
+stage("Build"){
+steps{
+script{
+
+echo "Build Started"
+sh 'mvn clean package'
+echo "Build completed"
+
+         }
+       }
+	   post {
+	   success{
+	   junit allowEmptyResults: true, skipMarkingBuildUnstable: true, testResults: '*/surefire-reports/*.xml'
+	   }
+	   }
+     }
+stage("SonarScanner"){
+steps{
+script{
+
+echo "SonarScanner Started"
+
+echo "SonarScanner completed"
+
+         }
+       }
+     }
+
+stage("SonarQube"){
+steps{
+script{
+
+echo "SonarQube Started"
+
+echo "SonarQube completed"
+
+         }
+       }
+     }
+stage("Nexus or Jfrogg"){
+steps{
+script{
+
+echo "Artifactory storage Started"
+
+echo "Artifactory storage completed"
+
+         }
+       }
+     }
+stage("calling-CD"){
+steps{
+script{
+
+echo "started calling CD job"
+    build job: 'CD', parameters: [
+      string(name: 'name', value:"${params.name}"),
+	  string(name: 'Choice', value:"${params.Choice}"),
+	  string(name: 'Deploy', value:"${params.Deploy}")]
+echo "completed CD job"
+        }
+      }
+    }	 
+  }
+}  
